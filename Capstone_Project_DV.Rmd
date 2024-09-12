@@ -1,0 +1,132 @@
+---
+title: "Agri-food CO2 Emission"
+author: "Eva Marudur"
+date: "2024-06-14"
+output: html_document
+theme: cosmo
+    highlight: breezedark
+    toc: true
+    toc_float:
+      collapsed: false
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr) # data prep
+library(lubridate) # date data prep
+library(ggplot2) # visualisasi statis
+library(plotly) # plot interaktif
+library(glue) # setting tooltip
+library(scales) # mengatur skala pada plot
+```
+## Membaca data 
+
+```{r}
+# Please type your code here
+CO_Emission <- read.csv("data_input/Agrofood_co2_emission.csv")
+CO_Emission
+```
+
+#Inspeksi Data Tipe dari CO_Emission:
+
+
+```{r}
+CO_Emission %>%
+  glimpse()
+```
+
+
+vids_clean_quiz <- 
+vids_quiz %>%
+  mutate_at(.vars =  c("channel_title", "category_id"),
+            .funs = as.factor)%>% 
+mutate(year = ymd(year),
+       publish_time = ymd_hms(publish_time))
+
+
+
+```{r}
+CO_Emission_Clean <- 
+CO_Emission %>%
+  mutate_at(.vars =  c("Area", "Region"),
+            .funs = as.factor)
+
+```
+
+  
+```{r}
+CO_Emission_Clean %>%
+  glimpse()
+```
+  
+
+# -------- TAB 1
+
+## plotly: CO_Emissison per area per year
+
+
+```{r}
+#library(dplyr)
+CO_Emission_Region <- 
+CO_Emission_Clean %>%
+  group_by(Region,Year) %>% 
+  summarise(CO_Emmision_Total = sum(total_emission)) %>% 
+  arrange(desc(CO_Emmision_Total))%>% 
+  mutate(text = paste0("CO_Emmision_Total: ", CO_Emmision_Total, " kt"))
+```
+#visualisasi Static
+
+```{r}
+CO_Emission_Region_plot <- 
+  ggplot(CO_Emission_Region,mapping =  aes(x=reorder(Region, CO_Emmision_Total), 
+                               y= CO_Emmision_Total,
+                              fill = CO_Emmision_Total,
+                              text = text)) +
+            geom_col(aes(fill = CO_Emmision_Total), show.legend = F) +
+            coord_flip()+
+            labs(title = "Total CO Emission per Region",
+                  x = "Total CO Emission",
+                  y = "") + 
+            scale_fill_gradient(low = "#F78181",
+                      high = "#3B0B0B") +
+theme_minimal() +
+theme(legend.position = "none")
+```
+
+
+
+```{r}
+ggplotly(CO_Emission_Region_plot, tooltip = 'text')
+```
+
+
+```{r}
+CO_Emission_Region_plot_interactive <- ggplotly(CO_Emission_Region_plot, tooltip = 'text')
+```
+
+
+```{r}
+CO_Emission_Region_plot_interactive
+```
+
+
+CO_Emission_Area_plot <- ggplot(ef_region, aes(x=reorder(Region, Ecological.Footprint), y=Ecological.Footprint, text = text)) +
+            geom_col(aes(fill=Ecological.Footprint), show.legend = F) +
+            coord_flip() +
+            labs(title = NULL,
+                 y = "global hectares (gha)",
+                 x = NULL) +
+            scale_y_continuous(limits = c(0, 150),
+                           breaks = seq(0,150, 25)) +
+            scale_fill_gradient(low = "#F78181", high = "#3B0B0B") +
+            theme(plot.title = element_text(face = "bold", size = 14, hjust = 0.04),
+              axis.ticks.y = element_blank(),
+              panel.background = element_rect(fill = "#ffffff"), 
+              panel.grid.major.x = element_line(colour = "grey"),
+              axis.line.x = element_line(color = "grey"),
+              axis.text = ele
